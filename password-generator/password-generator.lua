@@ -1,20 +1,18 @@
---[[
- - For best experience run this program in VS Code.
- - author: Josélio de S. C. Júnior <joseliojrx25@gmail.com>
- - copyright: Josélio de S. C. Júnior - 2021
-]]
-e = string.char(27)
-greet = e..'[38;2;255;255;255m'..e..'[48;2;0;152;170m'
-log = e..'[38;2;0;0;0m'..e..'[48;2;255;255;255m'
-alert = e..'[38;2;255;0;0m'..e..'[48;2;255;255;0m'..e..'[1m'
-valid = e..'[38;2;0;0;0m'..e..'[48;2;0;255;0m'..e..'[1m'
-reset = e..'[0m'
+--- For best experience run this program in VS Code.
+--- author: Josélio de S. C. Júnior <joseliojrx25@gmail.com>
+--- copyright: Josélio de S. C. Júnior - 2021
 
-alpha = {}
-for i = 1, 93, 1 do table.insert(alpha, string.char(32 + i)) end
+local e = string.char(27)
+local greet = e..'[38;2;255;255;255m'..e..'[48;2;0;152;170m'
+local log = e..'[38;2;0;0;0m'..e..'[48;2;255;255;255m'
+local alert = e..'[38;2;255;0;0m'..e..'[48;2;255;255;0m'..e..'[1m'
+local valid = e..'[38;2;0;0;0m'..e..'[48;2;0;255;0m'..e..'[1m'
+local reset = e..'[0m'
 
-print(greet.."  Password Generator - by Joselio Junior  \n  Type 'quit' to end this program.  "..reset);
-function main()
+local alpha = {} for i = 0, 93, 1 do table.insert(alpha, string.char(33 + i)) end
+
+print(greet.."  Password Generator - by Jos"..string.char(130).."lio J"..string.char(163).."nior  \n  Type 'quit' to end this program.  "..reset);
+local function main()
     print('\n'..log.." What's the length of your password? (6 - 30) "..reset)
     io.write('> ')
     local x = io.read()
