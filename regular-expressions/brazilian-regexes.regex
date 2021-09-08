@@ -1,0 +1,16 @@
+/*
+    This file contains the commonly used brazilian Regular Expressions.
+    Author: Josélio de S. C. Júnior - 2021  <joseliojrx25@gmail.com> - joseliojunior
+*/
+
+// Valid CPF: XXX.XXX.XXX-XX
+/^(\d{3}\.){2}\d{3}-\d{2}$/
+
+// Valid CNPJ: XX.XXX.XXX/0001-XX
+/^\d{2}(\.\d{3}){2}\/0{3}1-0{2}$/
+
+// Valid CEP: XXXXX-XXX
+/^\d{5}-\d{3}$/
+
+// Valid cellphone number: +55(XX)9XXXX-XXXX || (XX)9XXXX-XXXX || 0XX9XXXXXXXX || 0XX0XX9XXXXXXXX
+/^(0?\d{2}9\d{8}|0?\d{2}0?\d{2}9\d{8}|(\+55)?\(\d{2}\)9\d{4}-\d{4})$/
