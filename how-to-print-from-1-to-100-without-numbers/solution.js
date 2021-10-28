@@ -10,4 +10,4 @@
 */
 
 // Solution
-Array.from(Array(+`${'' ** ''}${+''}${+''}`), (_, idx) => console.log(++idx));
+Array.from(Array(+`${'' ** ''}${+''}${+''}`), (_, i) => console.log(++i));
