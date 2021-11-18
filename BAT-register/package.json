@@ -1,0 +1,13 @@
+{
+    "name": "bat-register",
+    "version": "1.0.0",
+    "description": "A little program to regist BAT.",
+    "main": "init.js",
+    "scripts": {},
+    "author": "Josélio de S. C. Júnior",
+    "license": "MIT",
+    "dependencies": {
+      "node-fetch": "^2.6.1",
+      "yaml": "^1.10.2"
+    }
+  }

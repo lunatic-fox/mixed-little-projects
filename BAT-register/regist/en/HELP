@@ -1,0 +1,7 @@
+
+"help" - Enter this help interface.
+"exit" - Close the program.
+"info" - Show more about this program.
+"lang" - Alternate the language of the program.
+"report" - Show the current report of the last 10 entries in database.
+"report - full" - Show the current report from all entries in database.
