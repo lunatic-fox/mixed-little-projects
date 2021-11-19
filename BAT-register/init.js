@@ -12,6 +12,7 @@ YAML = require('yaml'),
 fetch = require('node-fetch');
 
 
+
 // Interface ——————————————————————————————————————————————————————————————————
 /**
  * Colorizes the text.
@@ -29,7 +30,6 @@ const [ yellow, orange, green, cyan, violet ] = [
     s => rgb(s, 52, 235, 232),
     s => rgb(s, 201, 135, 255)
 ];
-
 
 let reg = !!+fs.readFileSync(`./regist/LANG`, 'utf8');
 const strings = {
@@ -71,6 +71,7 @@ const strings = {
 };
 
 
+
 // Database manipulation ————————————————————————————————————————————————————————————
 /**
  * Creates a YML and a JSON file database.
@@ -92,6 +93,7 @@ const inputCreate = entry => {
         )
     );
 };
+
 
 
 // Data request ——————————————————————————————————————————————————————————————————
@@ -116,6 +118,7 @@ const USDBRL = async () => {
         return { high: NaN, low: NaN };
     }
 };
+
 
 
 // Calculation ——————————————————————————————————————————————————————————————————
@@ -169,6 +172,7 @@ const calc = v => {
 };
 
 
+
 // Report ——————————————————————————————————————————————————————————————————
 /** 
  * @returns {{
@@ -198,6 +202,7 @@ const report = () => {
 
     return Object.fromEntries(table);
 };
+
 
 
 // Navigation ——————————————————————————————————————————————————————————————————
@@ -234,7 +239,6 @@ const mainOpt = (K, V) => {
 /** Alerts and closes the program. */
 const close = () => (console.log(strings.a1), r.close());
 
-
 /** Info about the program */
 const info = () => {
     const info = reg ? fs.readFileSync('./regist/pt-br/INFO', 'utf8')
@@ -243,7 +247,6 @@ const info = () => {
     q0();
 };
 
-
 /** Help interface */
 const help = () => {
     const info = reg ? fs.readFileSync('./regist/pt-br/HELP', 'utf8')
@@ -251,7 +254,6 @@ const help = () => {
     console.log(info.replace(/(".*")/g, yellow('$1')));
     q0();
 };
-
 
 const qLang = () => r.question(strings.qLang, a => {
     const regChange = v => fs.writeFileSync('./regist/LANG', v);
@@ -272,6 +274,7 @@ const qLang = () => r.question(strings.qLang, a => {
 
 });
 
+const temp = [];
 
 /** @type {number[]} */
 const values = Array(3);
@@ -283,7 +286,6 @@ const q0 = () => r.question(strings.q0, a => {
     );
 });
 
-
 const q1 = () => r.question(strings.q1, a1 => {
     mainOpt(a1, () => 
         +a1 ? (
@@ -292,12 +294,12 @@ const q1 = () => r.question(strings.q1, a1 => {
                 .then(a2 => {
                     values[2] = +((a2.high + a2.low) / 2).toFixed(2);
                     console.table(calc(values));
+                    temp.push(calc(values));
                 })
                 .then(() => q2())
         ) : q1()
     );
 });
-
 
 const q2 = () => r.question(strings.q2, a => {
     a = a.toLowerCase();
@@ -313,6 +315,10 @@ const q2 = () => r.question(strings.q2, a => {
     );
 });
 
+const tempReport = () => {
+    const objArr = temp.map(e => Object.entries(e)).flat();
+    return Object.fromEntries(objArr);
+};
 
 const q3 = () => r.question(strings.q3,
 a => {
@@ -320,11 +326,10 @@ a => {
 
     mainOpt(a, () => 
         a === 'y' ? q0()
-        : a === 'n' ? (console.table(report()), close())
+            : a === 'n' ? (console.table(tempReport()), close())
             : q3()
     );
 });
-
 
 console.log(reg ? `${violet('BAT Register 1.0 ')}\nDigite ${yellow(`"help"`)} para lista de comandos.`
 : `${violet('BAT Register 1.0 ')}\nType ${yellow(`"help"`)} to command list.`);
