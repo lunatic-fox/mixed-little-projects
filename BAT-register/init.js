@@ -1,7 +1,7 @@
 /**
  * @author Josélio de S. C. Júnior <joseliojrx25@gmail.com>
  * @copyright Josélio de S. C. Júnior - 2021
-*/
+ *//***/
 // Imports ——————————————————————————————————————————————————————————————————
 const fs = require('fs'),
 r = require('readline').createInterface({
@@ -9,66 +9,10 @@ r = require('readline').createInterface({
     output: process.stdout
 }),
 YAML = require('yaml'),
-fetch = require('node-fetch');
-
-
-// Interface ——————————————————————————————————————————————————————————————————
-/**
- * Colorizes the text.
- * @param {string} str The text to colorize.
- * @param {number} r red - a number from 0 to 255.
- * @param {number} g green - a number from 0 to 255.
- * @param {number} b blue - a number from 0 to 255.
- * @returns {string}
- */
-const rgb = (str, r, g, b) => `\u001b[38;2;${r};${g};${b}m${str}\u001b[0m`;
-const [ yellow, orange, green, cyan, violet ] = [
-    s => rgb(s, 255, 255, 0),
-    s => rgb(s, 255, 184, 41),
-    s => rgb(s, 92, 235, 52),
-    s => rgb(s, 52, 235, 232),
-    s => rgb(s, 201, 135, 255)
-];
-
-
-let reg = !!+fs.readFileSync(`./regist/LANG`, 'utf8');
-const strings = {
-    get qLang() {
-        return reg ? `\n${yellow('Selecione o idioma do programa:\n    [0]')} - Português do Brasil (PT-BR)\n    ${yellow('[1]')} - Inglês (EN)\n${cyan('>')} `
-        : `\n${yellow('Select the program language:\n    [0]')} - Brazilian Portuguese (PT-BR)\n    ${yellow('[1]')} - English (EN)\n${cyan('>')} ` ;
-    },
-    get aLang() {
-        return reg ? `\n${green('Português selecionado!')}\n`
-        : `\n${green('English selected!')}\n`;
-    },
-    get q0() {
-        return reg ? `\n${yellow('Entre com o valor em BAT')}\n${cyan('>')} `
-        : `\n${yellow('Enter the BAT value')}\n${cyan('>')} `
-    },
-    get q1() {
-        return reg ? `\n${yellow('Entre com o valor em USD')}\n${cyan('>')} `
-        : `\n${yellow('Enter the USD value')}\n${cyan('>')} `;
-    },
-    get q2() {
-        return reg ? `\n${orange('Deseja inserir uma entrada ao banco de dados? [y/n]')}\n${cyan('>')} `
-        : `\n${orange('Do you want to insert a entry in database? [y/n]')}\n${cyan('>')} `;
-    },
-    get q3() {
-        return reg ? `${yellow('Deseja inserir uma nova entrada? [y/n]')}\n${cyan('>')} `
-        : `${yellow('Do you want to insert another entry? [y/n]')}\n${cyan('>')} `;
-    },
-    get a0() {
-        return reg ? `\n${green('Dados inseridos no banco de dados com sucesso!')}\n`
-        : `\n${green('Data inserted in database successfully!')}\n`;
-    },
-    get a1() { return reg ? 'Fechando...' : 'Closing...' },
-    table: {
-        get batV() { return reg ? 'Valor em BAT' : 'BAT value' },
-        get usdV() { return reg ? 'Valor em USD' : 'USD value' },
-        get brlV() { return reg ? 'Valor em BRL' : 'BRL value' },
-        get price() { return reg ? 'Preço BRL/USD' : 'Price BRL/USD' }
-    }
-};
+fetch = require('node-fetch'),
+{ BACKUP_YML, DATABASE_YML, DATABASE_JSON,  REGIST_LANG} = require('./res/path'),
+{ yellow, violet } = require('./res/colors'),
+strings = require('./res/strings');
 
 
 // Database manipulation ————————————————————————————————————————————————————————————
@@ -84,13 +28,60 @@ const strings = {
  *    }
  * }} entry 
  */
-const inputCreate = entry => {
-    fs.appendFileSync(`./database/db.yml`, YAML.stringify(entry));
-    fs.writeFileSync(`./database/db.json`,
+const createEntry = entry => {
+    fs.appendFileSync(DATABASE_YML, YAML.stringify(entry));
+    fs.writeFileSync(DATABASE_JSON,
         JSON.stringify(
-            YAML.parse(fs.readFileSync(`./database/db.yml`, 'utf8')), null, 4
+            YAML.parse(fs.readFileSync(DATABASE_YML, 'utf8')), null, 4
         )
     );
+};
+
+
+const eraseEntry = () => r.question(strings.eraseEntry.qMain, id => {
+    mainOpt(id, () => {
+        id = id.toUpperCase();
+    
+        const table = currentTable();
+        const obj = Object.entries(table).filter(e => e[1].ID == id).flat();
+        const entry = table[obj[0]];
+
+        const afterTable = () => Object.entries(table).map((e, i) => {
+            e[1].ID = i < 10 ? `K00${i}` : i < 100 ? `K0${i}` : `K${i}`;
+            return e;
+        });
+    
+        if (entry) {
+            console.table({ [obj[0]]: obj[1] });
+            const qDel = () => r.question(strings.eraseEntry.qConfirm, a => {
+                mainOpt(a, () => {
+                    a = a.toLowerCase();
+    
+                    a === 'y' ? (
+                        delete table[obj[0]],
+                        fs.writeFileSync(BACKUP_YML, fs.readFileSync(DATABASE_YML, 'utf8')),
+                        fs.writeFileSync(DATABASE_YML, YAML.stringify(
+                            Object.fromEntries(afterTable())
+                        )),
+                        console.log(strings.eraseEntry.asw),
+                        console.table(table),
+                        q0()
+                    )
+                    : a === 'n' ? q0()
+                    : qDel();
+                });
+            });
+            qDel();
+        } else eraseEntry();
+    });
+});
+
+
+const restore = () => {
+    fs.writeFileSync(DATABASE_YML, fs.readFileSync(BACKUP_YML, 'utf8'));
+    console.log(strings.restored);
+    console.table(currentTable());
+    q0();
 };
 
 
@@ -146,9 +137,13 @@ const calc = v => {
     timestamp = `${timestamp.slice(0, 3).join('/')} - ${timestamp.slice(3, 6).join(':')}`;
     
     const brl = +(v[1] * v[2]).toFixed(2);
+    const idNum = Object.keys(currentTable()).length++;
+
+    const id = idNum < 10 ? `K00${idNum}` : idNum < 100 ? `K0${idNum}` : `K${idNum}`;
 
     const obj = isNaN(brl) ? {
         [`no data found - ${timestamp}`]: {
+            ID: id,
             BAT: v[0],
             USD: v[1],
             BRL: '?',
@@ -158,6 +153,7 @@ const calc = v => {
     } 
     : {
         [timestamp]: {
+            ID: id,
             BAT: v[0],
             USD: v[1],
             BRL: brl,
@@ -173,6 +169,7 @@ const calc = v => {
 /** 
  * @returns {{
  *    [timestamp]: {
+ *        ID: string,
  *        BAT: number,
  *        USD: number,
  *        BRL: number,
@@ -181,7 +178,19 @@ const calc = v => {
  *    }
  * }}
  */
-const currentTable = () => YAML.parse(fs.readFileSync(`./database/db.yml`, 'utf8'));
+const currentTable = () => YAML.parse(fs.readFileSync(DATABASE_YML, 'utf8'));
+
+
+/**
+ * @returns {{
+ *     [timestamp]: {
+ *         ['Valor em BAT'|'BAT value']: string,
+ *         ['Valor em USD'|'USD value']: string,
+ *         ['Valor em BRL'|'BRL value']: string,
+ *         ['Preço BRL/USD'|'Price BRL/USD']: string
+ *    }
+ * }}
+ */
 const report = () => {
     const table = Object.entries(currentTable()).map(e => {
         const [key, value] = [e[0], e[1]];
@@ -216,6 +225,12 @@ const mainOpt = (K, V) => {
             break;
         case 'info': info();
             break;
+        case 'delete':
+            console.table(currentTable());
+            eraseEntry();
+            break;
+        case 'restore': restore();
+            break;
         case 'report':
             const rep = Object.entries(report());
             const start = rep.length > 10 ? rep.length - 10 : 0;
@@ -231,39 +246,34 @@ const mainOpt = (K, V) => {
     }
 };
 
+
 /** Alerts and closes the program. */
 const close = () => (console.log(strings.a1), r.close());
 
 
 /** Info about the program */
 const info = () => {
-    const info = reg ? fs.readFileSync('./regist/pt-br/INFO', 'utf8')
-    : fs.readFileSync('./regist/en/INFO', 'utf8');
-    console.log(info.replace(/^(\w+.*)/gm, violet('$1')));
+    console.log(strings.aInfo.replace(/^(\w+.*)/gm, violet('$1')));
     q0();
 };
 
 
 /** Help interface */
 const help = () => {
-    const info = reg ? fs.readFileSync('./regist/pt-br/HELP', 'utf8')
-    : fs.readFileSync('./regist/en/HELP', 'utf8');
-    console.log(info.replace(/(".*")/g, yellow('$1')));
+    console.log(strings.aHelp.replace(/(".*")/g, yellow('$1')));
     q0();
 };
 
 
 const qLang = () => r.question(strings.qLang, a => {
-    const regChange = v => fs.writeFileSync('./regist/LANG', v);
+    const regChange = v => fs.writeFileSync(REGIST_LANG, v);
 
     +a === 0 ? (
-        reg = true,
         regChange('1'),
         console.log(strings.aLang),
         q0()
     )
     : +a === 1 ? (
-        reg = false,
         regChange('0'),
         console.log(strings.aLang),
         q0()
@@ -275,6 +285,7 @@ const qLang = () => r.question(strings.qLang, a => {
 
 /** @type {number[]} */
 const values = Array(3);
+
 
 const q0 = () => r.question(strings.q0, a => {
     mainOpt(a, () => 
@@ -304,7 +315,7 @@ const q2 = () => r.question(strings.q2, a => {
 
     mainOpt(a, () => 
         a === 'y' ? (
-            inputCreate(calc(values)),
+            createEntry(calc(values)),
             console.log(strings.a0),
             q3()
         )
@@ -326,6 +337,5 @@ a => {
 });
 
 
-console.log(reg ? `${violet('BAT Register 1.0 ')}\nDigite ${yellow(`"help"`)} para lista de comandos.`
-: `${violet('BAT Register 1.0 ')}\nType ${yellow(`"help"`)} to command list.`);
+console.log(strings.aInit);
 q0();
