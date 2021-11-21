@@ -4,15 +4,15 @@
  *//***/
 // Imports ——————————————————————————————————————————————————————————————————
 const fs = require('fs'),
-r = require('readline').createInterface({
-    input: process.stdin,
-    output: process.stdout
-}),
-YAML = require('yaml'),
-fetch = require('node-fetch'),
-{ BACKUP_YML, DATABASE_YML, DATABASE_JSON,  REGIST_LANG} = require('./res/path'),
-{ yellow, violet } = require('./res/colors'),
-strings = require('./res/strings');
+    r = require('readline').createInterface({
+        input: process.stdin,
+        output: process.stdout
+    }),
+    YAML = require('yaml'),
+    fetch = require('node-fetch'),
+    { BACKUP_YML, DATABASE_YML, DATABASE_JSON, REGIST_LANG } = require('./res/path'),
+    { yellow, violet } = require('./res/colors'),
+    strings = require('./res/strings');
 
 
 // Database manipulation ————————————————————————————————————————————————————————————
@@ -41,7 +41,7 @@ const createEntry = entry => {
 const eraseEntry = () => r.question(strings.eraseEntry.qMain, id => {
     mainOpt(id, () => {
         id = id.toUpperCase();
-    
+
         const table = currentTable();
         const obj = Object.entries(table).filter(e => e[1].ID == id).flat();
         const entry = table[obj[0]];
@@ -50,13 +50,13 @@ const eraseEntry = () => r.question(strings.eraseEntry.qMain, id => {
             e[1].ID = i < 10 ? `K00${i}` : i < 100 ? `K0${i}` : `K${i}`;
             return e;
         });
-    
+
         if (entry) {
             console.table({ [obj[0]]: obj[1] });
             const qDel = () => r.question(strings.eraseEntry.qConfirm, a => {
                 mainOpt(a, () => {
                     a = a.toLowerCase();
-    
+
                     a === 'y' ? (
                         delete table[obj[0]],
                         fs.writeFileSync(BACKUP_YML, fs.readFileSync(DATABASE_YML, 'utf8')),
@@ -67,8 +67,8 @@ const eraseEntry = () => r.question(strings.eraseEntry.qMain, id => {
                         console.table(table),
                         q0()
                     )
-                    : a === 'n' ? q0()
-                    : qDel();
+                        : a === 'n' ? q0()
+                            : qDel();
                 });
             });
             qDel();
@@ -135,7 +135,7 @@ const calc = v => {
     ].map(e => e < 10 ? `0${e}` : e);
 
     timestamp = `${timestamp.slice(0, 3).join('/')} - ${timestamp.slice(3, 6).join(':')}`;
-    
+
     const brl = +(v[1] * v[2]).toFixed(2);
     const idNum = Object.keys(currentTable()).length++;
 
@@ -150,17 +150,17 @@ const calc = v => {
             'BAT/USD': '?',
             'BAT/BRL': '?'
         }
-    } 
-    : {
-        [timestamp]: {
-            ID: id,
-            BAT: v[0],
-            USD: v[1],
-            BRL: brl,
-            'BAT/USD': +(v[0] / v[1]).toFixed(3),
-            'BAT/BRL': +(v[0]/ brl).toFixed(3)
-        }
-    };
+    }
+        : {
+            [timestamp]: {
+                ID: id,
+                BAT: v[0],
+                USD: v[1],
+                BRL: brl,
+                'BAT/USD': +(v[0] / v[1]).toFixed(3),
+                'BAT/BRL': +(v[0] / brl).toFixed(3)
+            }
+        };
     return obj;
 };
 
@@ -273,12 +273,12 @@ const qLang = () => r.question(strings.qLang, a => {
         console.log(strings.aLang),
         q0()
     )
-    : +a === 1 ? (
-        regChange('0'),
-        console.log(strings.aLang),
-        q0()
-    )
-    : qLang() ;
+        : +a === 1 ? (
+            regChange('0'),
+            console.log(strings.aLang),
+            q0()
+        )
+            : qLang();
 
 });
 
@@ -288,15 +288,15 @@ const values = Array(3);
 
 
 const q0 = () => r.question(strings.q0, a => {
-    mainOpt(a, () => 
+    mainOpt(a, () =>
         +a ? (values[0] = +a, q1())
-        : q0()
+            : q0()
     );
 });
 
 
 const q1 = () => r.question(strings.q1, a1 => {
-    mainOpt(a1, () => 
+    mainOpt(a1, () =>
         +a1 ? (
             values[1] = +a1,
             USDBRL()
@@ -313,28 +313,28 @@ const q1 = () => r.question(strings.q1, a1 => {
 const q2 = () => r.question(strings.q2, a => {
     a = a.toLowerCase();
 
-    mainOpt(a, () => 
+    mainOpt(a, () =>
         a === 'y' ? (
             createEntry(calc(values)),
             console.log(strings.a0),
             q3()
         )
-        : a === 'n' ? close()
-            : q2()
+            : a === 'n' ? close()
+                : q2()
     );
 });
 
 
 const q3 = () => r.question(strings.q3,
-a => {
-    a = a.toLowerCase();
+    a => {
+        a = a.toLowerCase();
 
-    mainOpt(a, () => 
-        a === 'y' ? q0()
-        : a === 'n' ? (console.table(report()), close())
-            : q3()
-    );
-});
+        mainOpt(a, () =>
+            a === 'y' ? q0()
+                : a === 'n' ? (console.table(report()), close())
+                    : q3()
+        );
+    });
 
 
 console.log(strings.aInit);
