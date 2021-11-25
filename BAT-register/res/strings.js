@@ -8,14 +8,21 @@ const fs = require('fs'),
 { yellow, orange, green, cyan, violet } = require('./colors');
 
 
+/** @param {string} str */
+const box = str => {
+    str = `\n│ ${str} │\n`;
+    const x = '─'.repeat(str.length - 4);
+    return `╭${x}╮${str}╰${x}╯`;
+};
+
 const strings = {
-    arrow: `\n${cyan('>')} `,
+    arrow: `\n${cyan('▶')} `,
     get reg() {
         return !!+fs.readFileSync(REGIST_LANG, 'utf8');
     },
     get aInit() {
-        return this.reg ? `${violet('BAT Register 1.0 ')}\nDigite ${yellow(`"help"`)} para lista de comandos.`
-        : `${violet('BAT Register 1.0 ')}\nType ${yellow(`"help"`)} to command list.`;
+        return this.reg ? `${violet(box('BAT Register 1.0'))}\nDigite ${yellow(`"help"`)} para lista de comandos.`
+        : `${violet(box('BAT Register 1.0'))}\nType ${yellow(`"help"`)} to command list.`;
     },
     get aInfo() {
         return this.reg ? fs.readFileSync(REGIST_PTBR_INFO, 'utf8')
@@ -42,8 +49,8 @@ const strings = {
             : `\n${yellow('Enter the USD value')}${this.arrow}`;
     },
     get q2() {
-        return this.reg ? `\n${orange('Deseja inserir uma entrada ao banco de dados? [y/n]')}${this.arrow}`
-            : `\n${orange('Do you want to insert a entry in database? [y/n]')}${this.arrow}`;
+        return this.reg ? `\n${orange('Deseja inserir esta entrada ao banco de dados? [y/n]')}${this.arrow}`
+            : `\n${orange('Do you want to insert this entry into database? [y/n]')}${this.arrow}`;
     },
     get q3() {
         return this.reg ? `${yellow('Deseja inserir uma nova entrada? [y/n]')}${this.arrow}`

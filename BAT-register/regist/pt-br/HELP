@@ -1,11 +1,12 @@
-
-"help" - Entra nesta interface de ajuda.
-"exit" - Fecha o programa.
-"info" - Mostra mais sobre o programa.
-"delete" - Deleta a entrada selecionada.
-    └ "back" - Retorna ao contexto anterior.
-"lang" - Alterna o idioma do programa.
-    └ "back" - Retorna ao contexto anterior.
-"restore" - Restaura o banco de dados do último backup.
-"report" - Exibe o relatório atual das 10 últimas entradas no banco de dados.
-"report -full" - Exibe o relatório atual de todas as entradas no banco de dados.
+╭──────────────────────────────────────────────────────────────────────────────────╮
+│ "help" - Entra nesta interface de ajuda.                                         │
+│ "exit" - Fecha o programa.                                                       │
+│ "info" - Mostra mais sobre o programa.                                           │
+│ "delete" - Deleta a entrada selecionada.                                         │
+│     ╰ "back" - Retorna ao contexto anterior.                                     │
+│ "lang" - Alterna o idioma do programa.                                           │
+│     ╰ "back" - Retorna ao contexto anterior.                                     │
+│ "restore" - Restaura o banco de dados do último backup.                          │
+│ "report" - Exibe o relatório atual das 10 últimas entradas no banco de dados.    │
+│ "report -full" - Exibe o relatório atual de todas as entradas no banco de dados. │
+╰──────────────────────────────────────────────────────────────────────────────────╯

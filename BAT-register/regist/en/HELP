@@ -1,11 +1,12 @@
-
-"help" - Enter this help interface.
-"exit" - Close the program.
-"info" - Show more about this program.
-"delete" - Delete the chosen entry.
-    └ "back" - Return to initial context.
-"lang" - Alternate the language of the program.
-    └ "back" - Return to initial context.
-"restore" - Restore database from the last backup.
-"report" - Show the current report of the last 10 entries in database.
-"report -full" - Show the current report from all entries in database.
+╭────────────────────────────────────────────────────────────────────────╮
+│ "help" - Enter this help interface.                                    │
+│ "exit" - Close the program.                                            │
+│ "info" - Show more about this program.                                 │
+│ "delete" - Delete the chosen entry.                                    │
+│     └ "back" - Return to initial context.                              │
+│ "lang" - Alternate the language of the program.                        │
+│     └ "back" - Return to initial context.                              │
+│ "restore" - Restore database from the last backup.                     │
+│ "report" - Show the current report of the last 10 entries in database. │
+│ "report -full" - Show the current report from all entries in database. │
+╰────────────────────────────────────────────────────────────────────────╯

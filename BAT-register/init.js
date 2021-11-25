@@ -273,7 +273,7 @@ const close = () => (console.log(strings.a1), setTimeout(r.close, 1000));
 
 /** Info about the program */
 const info = () => {
-    console.log(strings.aInfo.replace(/^(\w+.*)/gm, violet('$1')));
+    console.log(strings.aInfo.replace(/^(│)(\s\w+.*?)(\s*│)/gm, `$1${violet('$2')}$3`));
     q0();
 };
 
