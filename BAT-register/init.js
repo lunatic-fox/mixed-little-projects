@@ -4,15 +4,15 @@
  *//***/
 // Imports ——————————————————————————————————————————————————————————————————
 const fs = require('fs'),
-    r = require('readline').createInterface({
-        input: process.stdin,
-        output: process.stdout
-    }),
-    YAML = require('yaml'),
-    fetch = require('node-fetch'),
-    { BACKUP_YML, DATABASE_YML, DATABASE_JSON, REGIST_LANG } = require('./res/path'),
-    { yellow, violet } = require('./res/colors'),
-    strings = require('./res/strings');
+r = require('readline').createInterface({
+    input: process.stdin,
+    output: process.stdout
+}),
+YAML = require('yaml'),
+fetch = require('node-fetch'),
+{ BACKUP_YML, DATABASE_YML, DATABASE_JSON,  REGIST_LANG} = require('./res/path'),
+{ yellow, violet } = require('./res/colors'),
+strings = require('./res/strings');
 
 
 // Database manipulation ————————————————————————————————————————————————————————————
@@ -41,7 +41,7 @@ const createEntry = entry => {
 const eraseEntry = () => r.question(strings.eraseEntry.qMain, id => {
     mainOpt(id, () => {
         id = id.toUpperCase();
-
+    
         const table = currentTable();
         const obj = Object.entries(table).filter(e => e[1].ID == id).flat();
         const entry = table[obj[0]];
@@ -51,12 +51,18 @@ const eraseEntry = () => r.question(strings.eraseEntry.qMain, id => {
             return e;
         });
 
+        if (id === 'BACK') {
+            greeter();
+            q0();
+            return;
+        }
+    
         if (entry) {
             console.table({ [obj[0]]: obj[1] });
             const qDel = () => r.question(strings.eraseEntry.qConfirm, a => {
                 mainOpt(a, () => {
                     a = a.toLowerCase();
-
+    
                     a === 'y' ? (
                         delete table[obj[0]],
                         fs.writeFileSync(BACKUP_YML, fs.readFileSync(DATABASE_YML, 'utf8')),
@@ -67,12 +73,16 @@ const eraseEntry = () => r.question(strings.eraseEntry.qMain, id => {
                         console.table(table),
                         q0()
                     )
-                        : a === 'n' ? q0()
-                            : qDel();
+                    : a === 'n' ? q0()
+                    : qDel();
                 });
             });
             qDel();
-        } else eraseEntry();
+        } else {
+            console.clear();
+            console.table(currentTable());
+            eraseEntry();
+        };
     });
 });
 
@@ -135,7 +145,7 @@ const calc = v => {
     ].map(e => e < 10 ? `0${e}` : e);
 
     timestamp = `${timestamp.slice(0, 3).join('/')} - ${timestamp.slice(3, 6).join(':')}`;
-
+    
     const brl = +(v[1] * v[2]).toFixed(2);
     const idNum = Object.keys(currentTable()).length++;
 
@@ -150,17 +160,17 @@ const calc = v => {
             'BAT/USD': '?',
             'BAT/BRL': '?'
         }
-    }
-        : {
-            [timestamp]: {
-                ID: id,
-                BAT: v[0],
-                USD: v[1],
-                BRL: brl,
-                'BAT/USD': +(v[0] / v[1]).toFixed(3),
-                'BAT/BRL': +(v[0] / brl).toFixed(3)
-            }
-        };
+    } 
+    : {
+        [timestamp]: {
+            ID: id,
+            BAT: v[0],
+            USD: v[1],
+            BRL: brl,
+            'BAT/USD': +(v[0] / v[1]).toFixed(3),
+            'BAT/BRL': +(v[0]/ brl).toFixed(3)
+        }
+    };
     return obj;
 };
 
@@ -221,23 +231,28 @@ const mainOpt = (K, V) => {
             break;
         case 'help': help();
             break;
-        case 'lang': qLang();
+        case 'lang':
+            clearInterface();
+            qLang();
             break;
         case 'info': info();
             break;
         case 'delete':
+            clearInterface();
             console.table(currentTable());
             eraseEntry();
             break;
         case 'restore': restore();
             break;
         case 'report':
+            clearInterface();
             const rep = Object.entries(report());
             const start = rep.length > 10 ? rep.length - 10 : 0;
             console.table(Object.fromEntries(rep.slice(start, rep.length)));
             q0();
             break
-        case 'report-full':
+        case 'report -full':
+            clearInterface();
             console.table(report());
             q0();
             break
@@ -246,9 +261,14 @@ const mainOpt = (K, V) => {
     }
 };
 
+const clearInterface = () => process.stdout.cursorTo(0, 0);
+
+/** Clears the console and shows greetings. */
+const greeter = () => (console.clear(), console.log(strings.aInit));
+
 
 /** Alerts and closes the program. */
-const close = () => (console.log(strings.a1), r.close());
+const close = () => (console.log(strings.a1), setTimeout(r.close, 1000));
 
 
 /** Info about the program */
@@ -273,12 +293,19 @@ const qLang = () => r.question(strings.qLang, a => {
         console.log(strings.aLang),
         q0()
     )
-        : +a === 1 ? (
-            regChange('0'),
-            console.log(strings.aLang),
-            q0()
-        )
-            : qLang();
+    : +a === 1 ? (
+        regChange('0'),
+        console.log(strings.aLang),
+        q0()
+    )
+    : a.toLowerCase() === 'back' ? (
+        greeter(),
+        q0()
+    )
+    : (
+        console.clear(),
+        qLang()
+    );
 
 });
 
@@ -288,15 +315,19 @@ const values = Array(3);
 
 
 const q0 = () => r.question(strings.q0, a => {
-    mainOpt(a, () =>
-        +a ? (values[0] = +a, q1())
-            : q0()
+    mainOpt(a, () => 
+    +a ? (values[0] = +a, q1())
+    : (
+        clearInterface(),
+        greeter(),
+        q0()
+        )
     );
 });
 
 
 const q1 = () => r.question(strings.q1, a1 => {
-    mainOpt(a1, () =>
+    mainOpt(a1, () => 
         +a1 ? (
             values[1] = +a1,
             USDBRL()
@@ -305,7 +336,10 @@ const q1 = () => r.question(strings.q1, a1 => {
                     console.table(calc(values));
                 })
                 .then(() => q2())
-        ) : q1()
+        ) : (
+                process.stdout.cursorTo(0, 5),
+                q1()
+            )
     );
 });
 
@@ -313,29 +347,37 @@ const q1 = () => r.question(strings.q1, a1 => {
 const q2 = () => r.question(strings.q2, a => {
     a = a.toLowerCase();
 
-    mainOpt(a, () =>
+    mainOpt(a, () => 
         a === 'y' ? (
             createEntry(calc(values)),
             console.log(strings.a0),
             q3()
         )
-            : a === 'n' ? close()
-                : q2()
+        : a === 'n' ? close()
+        : (
+            clearInterface(),
+            greeter(),
+            q0()
+        )
     );
 });
 
 
 const q3 = () => r.question(strings.q3,
-    a => {
-        a = a.toLowerCase();
+a => {
+    a = a.toLowerCase();
 
-        mainOpt(a, () =>
-            a === 'y' ? q0()
-                : a === 'n' ? (console.table(report()), close())
-                    : q3()
-        );
-    });
+    mainOpt(a, () => 
+        a === 'y' ? q0()
+        : a === 'n' ? (console.table(report()), close())
+        : (
+            clearInterface(),
+            q3()
+        )
+    );
+});
 
 
 console.log(strings.aInit);
 q0();
+
