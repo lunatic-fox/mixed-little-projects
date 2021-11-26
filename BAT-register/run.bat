@@ -1,8 +1,8 @@
 @echo off
-rem Author: Josélio de S. C. Júnior
-rem Github: joseliojunior
-rem E-mail: joseliojrx25@gmail.com
-rem License: MIT
+: Author: Josélio de S. C. Júnior
+: Github: joseliojunior
+: E-mail: joseliojrx25@gmail.com
+: License: MIT
 
 if not exist %cd%\node_modules call:InstallDependencies
 
@@ -17,8 +17,8 @@ goto:eof
 :StartProgram
     cls
     node init
-    rem Exit the main program.
-    rem Create a CSV file in database folder from JSON.
+    : Exit the main program.
+    : Create a CSV file in database folder from JSON.
     cd database
     node JSONtoCSV
 exit
