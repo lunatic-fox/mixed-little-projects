@@ -1,6 +1,7 @@
 /**
  * @author Josélio de S. C. Júnior <joseliojrx25@gmail.com>
  * @copyright Josélio de S. C. Júnior - 2021
+ * @license MIT
  *//***/
 // Imports ——————————————————————————————————————————————————————————————————
 const fs = require('fs'),
@@ -188,7 +189,7 @@ const calc = v => {
  *    }
  * }}
  */
-const currentTable = () => YAML.parse(fs.readFileSync(DATABASE_YML, 'utf8'));
+const currentTable = () => YAML.parse(fs.readFileSync(DATABASE_YML, 'utf8')) || {};
 
 
 /**
@@ -377,7 +378,5 @@ a => {
     );
 });
 
-
 console.log(strings.aInit);
 q0();
-

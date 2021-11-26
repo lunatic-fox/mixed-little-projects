@@ -4,10 +4,18 @@ BAT Register&nbsp;&nbsp;&nbsp;&nbsp;![](https://joseliojunior.github.io/ghc-tags
 
 </h1>
 
->ℹ To run this program.
+> ℹ At first you can use `npm i` to install the dependencies of this project. Then `node init` to open the program.
 ~~~
-node init
+npm i&&node init
 ~~~
+
+<div align="center">
+
+**or**
+
+</div>
+
+> ℹ To run this program on Windows you can open the `run.bat` file. It will automatically install npm dependencies, if it's the first time you it, then run the program.
 
 &nbsp;&nbsp;&nbsp;&nbsp;This little node.js project is a register to BAT and USD values in a database. I want to regist my rewards, so I decided to make this program to help a little.
 

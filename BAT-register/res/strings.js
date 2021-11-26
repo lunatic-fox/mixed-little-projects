@@ -1,6 +1,7 @@
 /**
  * @author Josélio de S. C. Júnior <joseliojrx25@gmail.com>
  * @copyright Josélio de S. C. Júnior - 2021
+ * @license MIT
  *//***/
 // Imports ——————————————————————————————————————————————————————————————————
 const fs = require('fs'),
@@ -16,7 +17,7 @@ const box = str => {
 };
 
 const strings = {
-    arrow: `\n${cyan('▶')} `,
+    arrow: `\n${cyan('>')} `,
     get reg() {
         return !!+fs.readFileSync(REGIST_LANG, 'utf8');
     },
