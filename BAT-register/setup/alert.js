@@ -1,0 +1,2 @@
+console.log(`\u001b[38;2;100;255;0mYou need no install the dependences of this project in order to run it properly!\u001b[0m`);
+console.log(`Trying to install via \u001b[38;2;255;255;0m"npm i"\u001b[0m command:`);

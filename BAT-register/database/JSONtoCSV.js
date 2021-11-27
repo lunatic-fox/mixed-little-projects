@@ -16,5 +16,3 @@ const tab = [
 
 const csv = tab.map(e => e.join(';')).join(';\n');
 fs.writeFileSync('./db.csv', csv);
-
-console.log(plan)

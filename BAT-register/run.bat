@@ -5,14 +5,14 @@
 : License: MIT
 
 if not exist %cd%\node_modules call:InstallDependencies
+if not exist %cd%\package-lock.json call:InstallDependencies
 
 call:StartProgram
 
 :InstallDependencies
-    echo You need no install the dependences of this project in order to run it properly.
-    echo Trying to install via `npm i` command!
+    node %cd%\setup\alert 
     npm i && call:StartProgram
-goto:eof
+exit
 
 :StartProgram
     cls
